@@ -75,7 +75,7 @@ ApplicationWindow {
         bothChildren = width > height * widthHeightToShowBoth ? true : false;
     }
 
-    function buttonClicked(snifferWasSelected){
+    function buttonClicked(snifferWasSelected) {
         snifferSelected = snifferWasSelected;
         recalculateChildren();
     }
@@ -84,20 +84,31 @@ ApplicationWindow {
         anchors.fill: parent
 
         Sniffer {
+            id: sniffer
+
             Layout.fillHeight: true
             Layout.fillWidth: true
-            id: sniffer
+
             listItemHeight: applicationWindow.listItemHeight * 1.5
-            visibility: bothChildren || snifferSelected
+            visible: bothChildren || snifferSelected
         }
 
         DevicesList {
+            id: devicesList
+
             Layout.fillHeight: true
             Layout.fillWidth: true
-            id: devicesList
+
             margin: applicationWindow.margin
             listItemHeight: applicationWindow.listItemHeight
-            visibility: bothChildren || !snifferSelected
+            visible: bothChildren || !snifferSelected
+        }
+
+        BTScaner {
+            id: btScanerForm
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
 
     }
@@ -134,6 +145,19 @@ ApplicationWindow {
                 onClicked: {
                     snifferSelected = false;
                     recalculateChildren();
+                }
+            }
+
+            Item { Layout.fillWidth: true }
+
+            SelectionButton {
+                id: bleButton
+                Layout.alignment: Qt.AlignCenter
+                buttonText: "BLE"
+                isSniffer: false
+                onClicked: {
+                    //snifferSelected = false;
+                    //recalculateChildren();
                 }
             }
 

@@ -40,6 +40,7 @@
 #include <virgil/iot/qt/VSQIoTKit.h>
 #include <virgil/iot/qt/netif/VSQUdpBroadcast.h>
 #include <virgil/iot/qt/netif/VSQNetifBLE.h>
+#include <virgil/iot/qt/netif/VSQNetifBLEEnumerator.h>
 #include <virgil/iot/logger/logger.h>
 
 int
@@ -58,11 +59,19 @@ VSQApplication::run() {
     }
 
     QQmlContext *context = engine.rootContext();
+    qmlRegisterType<VSQNetifBLEEnumerator>("com.virgil.cpp.app", 1, 0, "VSQNetifBLEEnumerator");
     context->setContextProperty("SnapInfoClient", &VSQSnapInfoClientQml::instance());
     context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer());
 
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     engine.load(url);
+
+    // Change size of window for desctop version
+#if defined (__APPLE__) || defined (__linux)
+    QObject * rootObject(engine.rootObjects().first());
+    rootObject->setProperty("width", 600);
+    rootObject->setProperty("height", 400);
+#endif
 
     return QGuiApplication::instance()->exec();
 }

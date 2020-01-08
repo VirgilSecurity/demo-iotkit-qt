@@ -4,5 +4,6 @@
         <file>qml/DevicesList.qml</file>
         <file>qml/Sniffer.qml</file>
         <file>qml/SelectionButton.qml</file>
+        <file>qml/BTScaner.qml</file>
     </qresource>
 </RCC>
