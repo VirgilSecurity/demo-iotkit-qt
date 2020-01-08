@@ -32,19 +32,37 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-
 import QtQuick 2.5
 import QtQuick.Controls 2.12
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.5
 
 ApplicationWindow {
-    property int footerHeight: 60
-    property int listItemHeight: 80
-    property bool snifferOnLeft : true
-    property real snifferWidthRatio : 0.5
+
+    id: applicationWindow
+    visible: true
+    title: "IoTKit Qt Demo"
+    background: Rectangle {
+        color: "#303030"
+    }
+
+    property int dpi: Screen.pixelDensity * 25.4
+    property int desktopDPI: 120
+    property int dip2pixels: 160
+
+    function dp(x) {
+        if(dpi < desktopDPI) {
+            return x;
+        } else {
+            return x * (dpi / dip2pixels);
+        }
+    }
+
+    property int footerHeight: dp(80)
+    property int listItemHeight: dp(80)
     property real widthHeightToShowBoth : 1.5
-    property int margin: 5
+    property int margin: dp(5)
+    property int dataFontSize: 15
 
     property bool bothChildren: true
     property bool snifferSelected: false
@@ -54,76 +72,73 @@ ApplicationWindow {
     property int snifferWidth
 
     function recalculateChildren() {
-        devicesListButton.x = ( width / 2 - devicesListButton.side ) / 2;
-        snifferButton.x = ( width * 3 / 2 - snifferButton.side ) / 2;
-
         bothChildren = width > height * widthHeightToShowBoth ? true : false;
+    }
 
-        if(bothChildren) {
+    function buttonClicked(snifferWasSelected){
+        snifferSelected = snifferWasSelected;
+        recalculateChildren();
+    }
 
-            snifferX = snifferOnLeft ? 0 : width * snifferWidthRatio;
-            snifferWidth = width * snifferWidthRatio;
+    RowLayout {
+        anchors.fill: parent
 
-            devicesListX = snifferOnLeft ? width * snifferWidthRatio : 0;
-            devicesListWidth = width * (1 - snifferWidthRatio );
-
-        } else {
-
-            snifferX = 0;
-            snifferWidth = width;
-
-            devicesListX = 0;
-            devicesListWidth = width;
+        Sniffer {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            id: sniffer
+            listItemHeight: applicationWindow.listItemHeight * 1.5
+            visibility: bothChildren || snifferSelected
         }
-    }
 
-    id: applicationWindow
-    visible: true
-    title: "IoTKit Qt Demo"
-    background: Rectangle {
-        color: "#303030"
-    }
+        DevicesList {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            id: devicesList
+            margin: applicationWindow.margin
+            listItemHeight: applicationWindow.listItemHeight
+            visibility: bothChildren || !snifferSelected
+        }
 
-    DevicesList {
-        id: devicesList
-        margin: margin
-        listItemHeight: listItemHeight
-        visibility: bothChildren || !snifferSelected
-        curX: devicesListX
-        curWidth: devicesListWidth
-    }
-
-    Sniffer {
-        id: sniffer
-        visibility: bothChildren || snifferSelected
-        curX: snifferX
-        curWidth: snifferWidth
     }
 
     footer: Rectangle {
-        width: parent.width
         height: footerHeight
         color: "black"
         visible: !bothChildren
 
-        DevicesListButton {
-            id: devicesListButton
-            side: footerHeight - 2 * margin
-            y: margin
-            onClicked: {
-                snifferSelected = false;
-                recalculateChildren();
-            }
-        }
+        RowLayout {
+            anchors.fill: parent
 
-        SnifferButton {
-            id: snifferButton
-            side: footerHeight - 2 * margin
-            y: margin
-            onClicked: {
-                snifferSelected = true;
-                recalculateChildren();
+            Item { Layout.fillWidth: true }
+
+
+            SelectionButton {
+                id: devicesListButton
+                Layout.alignment: Qt.AlignCenter
+                buttonText: "Devices"
+                isSniffer: false
+                onClicked: {
+                    snifferSelected = false;
+                    recalculateChildren();
+                }
             }
+
+            Item { Layout.fillWidth: true }
+
+            SelectionButton {
+                id: snifferButton
+                Layout.alignment: Qt.AlignCenter
+                buttonText: "Sniffer"
+                isSniffer: true
+                onClicked: {
+                    snifferSelected = false;
+                    recalculateChildren();
+                }
+            }
+
+            Item { Layout.fillWidth: true }
+
         }
     }
 
@@ -134,4 +149,5 @@ ApplicationWindow {
     onHeightChanged: {
         recalculateChildren();
     }
+
 }
