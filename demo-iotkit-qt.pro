@@ -32,7 +32,7 @@
 #
 #  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-QT += core network qml quick
+QT += core network bluetooth qml quick
 
 CONFIG += c++14
 

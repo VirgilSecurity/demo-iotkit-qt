@@ -39,6 +39,7 @@
 
 #include <virgil/iot/qt/VSQIoTKit.h>
 #include <virgil/iot/qt/netif/VSQUdpBroadcast.h>
+#include <virgil/iot/qt/netif/VSQNetifBLE.h>
 #include <virgil/iot/logger/logger.h>
 
 int
@@ -46,7 +47,7 @@ VSQApplication::run() {
     QQmlApplicationEngine engine;
 
     auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT << VSQFeatures::SNAP_SNIFFER;
-    auto impl = VSQImplementations() << QSharedPointer<VSQUdpBroadcast>::create();
+    auto impl = VSQImplementations() << QSharedPointer<VSQNetifBLE>::create();
     auto roles = VSQDeviceRoles() << VirgilIoTKit::VS_SNAP_DEV_CONTROL;
     auto appConfig = VSQAppConfig() << VSQManufactureId() << VSQDeviceType() << VSQDeviceSerial()
                                     << VirgilIoTKit::VS_LOGLEV_DEBUG << roles << VSQSnifferConfig(20);
