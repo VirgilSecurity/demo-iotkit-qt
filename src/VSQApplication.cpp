@@ -46,20 +46,27 @@
 int
 VSQApplication::run() {
     QQmlApplicationEngine engine;
+    VSQNetifBLEEnumerator bleEnumerator;
+    auto netifBLE = QSharedPointer<VSQNetifBLE>::create();
 
     auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT << VSQFeatures::SNAP_SNIFFER;
-    auto impl = VSQImplementations() << QSharedPointer<VSQNetifBLE>::create();
+    auto impl = VSQImplementations() << netifBLE;
     auto roles = VSQDeviceRoles() << VirgilIoTKit::VS_SNAP_DEV_CONTROL;
     auto appConfig = VSQAppConfig() << VSQManufactureId() << VSQDeviceType() << VSQDeviceSerial()
                                     << VirgilIoTKit::VS_LOGLEV_DEBUG << roles << VSQSnifferConfig();
 
+    // Connect signals and slots
+    QObject::connect(&bleEnumerator, &VSQNetifBLEEnumerator::fireDeviceSelected,
+            netifBLE.data(), &VSQNetifBLE::onOpenDevice);
+
+    // Initialize IoTKit
     if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
         VS_LOG_CRITICAL("Unable to initialize Virgil IoT KIT");
         return -1;
     }
 
     QQmlContext *context = engine.rootContext();
-    qmlRegisterType<VSQNetifBLEEnumerator>("com.virgil.cpp.app", 1, 0, "VSQNetifBLEEnumerator");
+    context->setContextProperty("bleEnum", &bleEnumerator);
     context->setContextProperty("SnapInfoClient", &VSQSnapInfoClientQml::instance());
     context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer());
 

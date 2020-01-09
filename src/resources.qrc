@@ -5,5 +5,6 @@
         <file>qml/Sniffer.qml</file>
         <file>qml/SelectionButton.qml</file>
         <file>qml/BTScaner.qml</file>
+        <file>qml/default.png</file>
     </qresource>
 </RCC>

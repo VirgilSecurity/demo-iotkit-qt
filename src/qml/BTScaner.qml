@@ -35,15 +35,12 @@
  */
 
 import QtQuick 2.5
-import com.virgil.cpp.app 1.0
 
 Item {
     property alias mainList: mainList
     property var inProgress
 
     id: mainItem
-
-    VSQNetifBLEEnumerator { id: bleEnum }
 
     Connections {
         target: bleEnum
@@ -117,6 +114,11 @@ Item {
                 MouseArea {
                     id: mouseAreaConnect
                     anchors.fill: parent
+
+                    onClicked: {
+                        var deviceName = btScanerForm.selectedDevice();
+                        bleEnum.select(deviceName);
+                    }
                 }
             }
         }
@@ -196,7 +198,7 @@ Item {
             clip: true
             Image {
                 id: bticon
-                source: "qrc:/default.png";
+                source: "qrc:/qml/default.png";
                 width: bttext.height;
                 height: bttext.height;
                 anchors.top: parent.top
