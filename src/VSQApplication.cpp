@@ -59,6 +59,9 @@ VSQApplication::run() {
     QObject::connect(&bleEnumerator, &VSQNetifBLEEnumerator::fireDeviceSelected,
             netifBLE.data(), &VSQNetifBLE::onOpenDevice);
 
+    QObject::connect(netifBLE.data(), SIGNAL(fireDeviceReady()),
+                     &VSQSnapInfoClient::instance(), SLOT(onStartFullPolling()));
+
     // Initialize IoTKit
     if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
         VS_LOG_CRITICAL("Unable to initialize Virgil IoT KIT");
