@@ -40,7 +40,6 @@ import QtQuick.Layouts 1.1
 
 ListView {
     id: devicesList
-    property alias visibility : devicesList.visible
     property int margin
     property var listItemHeight
     property string evenGradientColor: "#20FFFFFF"
@@ -104,22 +103,27 @@ ListView {
             }
 
             Text {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
                 Layout.fillWidth: true
+                Layout.fillHeight: true
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignBottom
                 color: "yellow"
                 text: isActive ? "active" : "not active"
             }
 
             Text {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
                 color: "white"
                 text: macAddress
             }
 
             Text {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 Layout.fillWidth: true
+                Layout.fillHeight: true
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignTop
                 color: "white"
                 text: "fw " + fwVer + ", tl " + tlVer
             }

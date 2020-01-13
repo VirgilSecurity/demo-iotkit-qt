@@ -41,7 +41,7 @@ ApplicationWindow {
 
     id: applicationWindow
     visible: true
-    title: "IoTKit Qt Demo"
+    title: "Virgil IoTKit Qt Demo"
     background: Rectangle {
         color: "#303030"
     }
@@ -63,20 +63,25 @@ ApplicationWindow {
     property real widthHeightToShowBoth : 1.5
     property int margin: dp(5)
     property int dataFontSize: 15
-
     property bool bothChildren: true
-    property bool snifferSelected: false
-    property int devicesListX
-    property int devicesListWidth
-    property int snifferX
-    property int snifferWidth
+    property bool currentMenuId: Main.MenuId.DevicesListId
 
     function recalculateChildren() {
         bothChildren = width > height * widthHeightToShowBoth ? true : false;
     }
 
+<<<<<<< HEAD:src/qml/main.qml
     function buttonClicked(snifferWasSelected) {
         snifferSelected = snifferWasSelected;
+=======
+    enum MenuId {
+        SnifferId,
+        DevicesListId
+    }
+
+    function menuItemSelected(menuId){
+        currentMenuId = menuId;
+>>>>>>> 7ed7e62d0977b33750dba42caf34035249dd93f7:src/qml/Main.qml
         recalculateChildren();
     }
 
@@ -90,7 +95,11 @@ ApplicationWindow {
             Layout.fillWidth: true
 
             listItemHeight: applicationWindow.listItemHeight * 1.5
+<<<<<<< HEAD:src/qml/main.qml
             visible: bothChildren || snifferSelected
+=======
+            visible: bothChildren || currentMenuId == Main.MenuId.SnifferId
+>>>>>>> 7ed7e62d0977b33750dba42caf34035249dd93f7:src/qml/Main.qml
         }
 
         DevicesList {
@@ -101,7 +110,11 @@ ApplicationWindow {
 
             margin: applicationWindow.margin
             listItemHeight: applicationWindow.listItemHeight
+<<<<<<< HEAD:src/qml/main.qml
             visible: bothChildren || !snifferSelected
+=======
+            visible: bothChildren || currentMenuId == Main.MenuId.DevicesListId
+>>>>>>> 7ed7e62d0977b33750dba42caf34035249dd93f7:src/qml/Main.qml
         }
 
         BTScaner {
@@ -122,29 +135,18 @@ ApplicationWindow {
 
             Item { Layout.fillWidth: true }
 
-
-            SelectionButton {
+            Button {
                 id: devicesListButton
-                Layout.alignment: Qt.AlignCenter
-                buttonText: "Devices"
-                isSniffer: false
-                onClicked: {
-                    snifferSelected = false;
-                    recalculateChildren();
-                }
+                text: "Devices"
+                onClicked: applicationWindow.menuItemSelected(Main.MenuId.DevicesListId)
             }
 
             Item { Layout.fillWidth: true }
 
-            SelectionButton {
+            Button {
                 id: snifferButton
-                Layout.alignment: Qt.AlignCenter
-                buttonText: "Sniffer"
-                isSniffer: true
-                onClicked: {
-                    snifferSelected = false;
-                    recalculateChildren();
-                }
+                text: "Sniffer"
+                onClicked: applicationWindow.menuItemSelected(Main.MenuId.SnifferId)
             }
 
             Item { Layout.fillWidth: true }

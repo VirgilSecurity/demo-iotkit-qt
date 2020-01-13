@@ -53,7 +53,7 @@ VSQApplication::run() {
     auto impl = VSQImplementations() << netifBLE;
     auto roles = VSQDeviceRoles() << VirgilIoTKit::VS_SNAP_DEV_CONTROL;
     auto appConfig = VSQAppConfig() << VSQManufactureId() << VSQDeviceType() << VSQDeviceSerial()
-                                    << VirgilIoTKit::VS_LOGLEV_DEBUG << roles << VSQSnifferConfig();
+                                    << VirgilIoTKit::VS_LOGLEV_DEBUG << roles << VSQSnapSnifferQmlConfig();
 
     // Connect signals and slots
     QObject::connect(&bleEnumerator, &VSQNetifBLEEnumerator::fireDeviceSelected,
@@ -71,9 +71,9 @@ VSQApplication::run() {
     QQmlContext *context = engine.rootContext();
     context->setContextProperty("bleEnum", &bleEnumerator);
     context->setContextProperty("SnapInfoClient", &VSQSnapInfoClientQml::instance());
-    context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer());
+    context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer().get());
 
-    const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/qml/Main.qml"));
     engine.load(url);
 
     // Change size of window for desctop version
@@ -83,6 +83,26 @@ VSQApplication::run() {
     rootObject->setProperty("height", 400);
 #endif
 
+#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(Q_OS_WATCHOS)
+    {
+        QObject *rootObject(engine.rootObjects().first());
+
+        int prevWidth = rootObject->property("width").toInt();
+        int prevHeight = rootObject->property("height").toInt();
+        int prevX = rootObject->property("x").toInt();
+        int prevY = rootObject->property("y").toInt();
+
+        constexpr int newWidth = 640;
+        constexpr int newHeight = 400;
+        int newX = prevX - ( newWidth - prevWidth ) / 2;
+        int newY = prevY - ( newHeight - prevHeight ) / 2;
+
+        rootObject->setProperty("width", newWidth);
+        rootObject->setProperty("height", newHeight);
+        rootObject->setProperty("x", newX);
+        rootObject->setProperty("y", newY);
+    }
+#endif
+
     return QGuiApplication::instance()->exec();
 }
-
