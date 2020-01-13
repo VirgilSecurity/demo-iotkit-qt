@@ -110,7 +110,6 @@ ApplicationWindow {
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
-
     }
 
     footer: Rectangle {

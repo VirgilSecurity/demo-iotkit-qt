@@ -91,3 +91,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DEPENDPATH += $${INCLUDEPATH}
 
+ios {
+    QMAKE_INFO_PLIST = packages/ios/Info.plist
+}

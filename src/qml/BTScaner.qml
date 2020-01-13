@@ -1,44 +1,43 @@
-/**
- * Copyright (C) 2015 Virgil Security Inc.
- *
- * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     (1) Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *
- *     (2) Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
- *
- *     (3) Neither the name of the copyright holder nor the names of its
- *     contributors may be used to endorse or promote products derived from
- *     this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//
+//  All rights reserved.
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are
+//  met:
+//
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
+//
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
+//
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//  DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+//  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+//  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+//  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
+//  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 import QtQuick 2.5
+import QtQuick.Layouts 1.5
+import QtQuick.Controls 2.12
 
 Item {
     property alias mainList: mainList
-    property var inProgress
 
     id: mainItem
 
@@ -51,7 +50,7 @@ Item {
 
         onFireDiscoveryFinished: {
             btScanerForm.mainList.model = bleEnum.devicesList()
-            btScanerForm.inProgress = "false"
+            startDiscovery();
         }
     }
 
@@ -61,132 +60,41 @@ Item {
         color: "#155902"
 
         Rectangle {
-            id: btnStop
-            y: 262
-            width: 100
-            height: 35
-            color: "#77b0e8"
-            anchors.left: parent.left
-            anchors.leftMargin: 8
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 8
-
-            MouseArea {
-                id: mouseAreaStop
-                anchors.fill: parent
-
-                onClicked:  {
-                    inProgress = "false"
-                }
-            }
-
-            Text {
-                id: text1
-                text: qsTr("Stop")
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                anchors.fill: parent
-                font.pixelSize: 20
-            }
-        }
-
-        Rectangle {
-            id: btnConnect
-            x: 152
-            y: 262
+            id: btnInitialize
             width: 100
             height: 35
             color: "#c9a1e2"
-            visible: inProgress != "true"
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 8
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-
-            Text {
-                id: text2
-                text: qsTr("Connect")
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                anchors.fill: parent
-                font.pixelSize: 20
-
-                MouseArea {
-                    id: mouseAreaConnect
-                    anchors.fill: parent
-
-                    onClicked: {
-                        var deviceName = btScanerForm.selectedDevice();
-                        bleEnum.select(deviceName);
-                    }
-                }
-            }
-        }
-
-        Rectangle {
-            id: btnRefresh
-            x: 150
-            y: 357
-            width: 100
-            height: 35
-            color: "#f98f66"
-            visible: inProgress != "true"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 8
             anchors.horizontalCenter: parent.horizontalCenter
 
             Text {
-                id: text3
-                text: qsTr("Refresh")
+                id: txtInitialize
+                text: qsTr("Initialize")
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 anchors.fill: parent
                 font.pixelSize: 20
 
                 MouseArea {
-                    id: mouseAreaRefresh
+                    id: mouseAreaCInitialize
                     anchors.fill: parent
+
                     onClicked: {
-                        startDiscovery()
-                        inProgress = "true"
+                        onClicked: showMessageBox()
                     }
                 }
             }
         }
     }
 
-    Rectangle {
-        id: busy
-        height: 22
-
-        anchors.top: parent.top
-        radius: 5
-        anchors.topMargin: 8
-        anchors.right: parent.right
-        anchors.rightMargin: 8
-        anchors.left: parent.left
-        anchors.leftMargin: 8
-        color: "#1c56f3"
-        visible: inProgress == "true"
-
-        SequentialAnimation on color {
-            id: busyThrobber
-            ColorAnimation { easing.type: Easing.InOutSine; from: "#1c56f3"; to: "white"; duration: 1000; }
-            ColorAnimation { easing.type: Easing.InOutSine; to: "#1c56f3"; from: "white"; duration: 1000 }
-            loops: Animation.Infinite
-        }
-    }
-
     ListView {
         id: mainList
-        anchors.bottom: parent.bottom
+        anchors.fill: parent
         anchors.bottomMargin: 53
-        anchors.right: parent.right
         anchors.rightMargin: 8
-        anchors.left: parent.left
         anchors.leftMargin: 8
-        anchors.top: busy.bottom
-        anchors.topMargin: 6
+        anchors.topMargin: 8
 
         delegate: Rectangle {
             property variant selectedData: model
@@ -231,6 +139,10 @@ Item {
         focus: true
     }
 
+    Component.onCompleted: {
+        startDiscovery();
+    }
+
     function selectedDevice() {
         return mainList.currentItem.selectedData.modelData
     }
@@ -238,7 +150,31 @@ Item {
     function startDiscovery() {
         bleEnum.startDiscovery()
         btScanerForm.mainList.model = bleEnum.devicesList()
-        btScanerForm.inProgress = "true"
+    }
+
+    function showMessageBox() {
+        var component = Qt.createComponent("InitDialog.qml")
+        if (component.status === Component.Ready) {
+            var dialog = component.createObject(applicationWindow)
+            dialog.applied.connect(function()
+                    {
+                        initializeDevice()
+                        dialog.close()
+                    })
+            dialog.open()
+            return dialog
+        }
+        console.error(component.errorString())
+        return null
+    }
+
+    function initializeDevice() {
+        try {
+            var deviceName = btScanerForm.selectedDevice();
+            bleEnum.select(deviceName);
+        } catch (error) {
+            console.error("Cannot start initialization of device")
+        }
     }
 }
 

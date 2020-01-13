@@ -6,5 +6,6 @@
         <file>qml/SelectionButton.qml</file>
         <file>qml/BTScaner.qml</file>
         <file>qml/default.png</file>
+        <file>qml/InitDialog.qml</file>
     </qresource>
 </RCC>
