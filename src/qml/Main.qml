@@ -52,37 +52,34 @@ ApplicationWindow {
 
     function dp(x) {
         if(dpi < desktopDPI) {
-            return x;
+            return x
         } else {
-            return x * (dpi / dip2pixels);
+            return x * (dpi / dip2pixels)
         }
     }
 
     property int footerHeight: dp(80)
     property int listItemHeight: dp(80)
-    property real widthHeightToShowBoth : 1.5
+    property int minWidthPerElement : 250
+    property int elementCount : 3
     property int margin: dp(5)
     property int dataFontSize: 15
-    property bool bothChildren: true
-    property bool currentMenuId: Main.MenuId.DevicesListId
+    property bool allChildren: true
+    property int currentMenuId: Main.MenuId.DevicesListId
 
     function recalculateChildren() {
-        bothChildren = width > height * widthHeightToShowBoth ? true : false;
+        allChildren = width > (elementCount * minWidthPerElement)
     }
 
-<<<<<<< HEAD:src/qml/main.qml
-    function buttonClicked(snifferWasSelected) {
-        snifferSelected = snifferWasSelected;
-=======
     enum MenuId {
         SnifferId,
-        DevicesListId
+        DevicesListId,
+        BLEId
     }
 
-    function menuItemSelected(menuId){
-        currentMenuId = menuId;
->>>>>>> 7ed7e62d0977b33750dba42caf34035249dd93f7:src/qml/Main.qml
-        recalculateChildren();
+    function menuItemSelected(menuId) {
+        currentMenuId = menuId
+        recalculateChildren()
     }
 
     RowLayout {
@@ -95,11 +92,7 @@ ApplicationWindow {
             Layout.fillWidth: true
 
             listItemHeight: applicationWindow.listItemHeight * 1.5
-<<<<<<< HEAD:src/qml/main.qml
-            visible: bothChildren || snifferSelected
-=======
-            visible: bothChildren || currentMenuId == Main.MenuId.SnifferId
->>>>>>> 7ed7e62d0977b33750dba42caf34035249dd93f7:src/qml/Main.qml
+            visible: allChildren || currentMenuId === Main.MenuId.SnifferId
         }
 
         DevicesList {
@@ -110,11 +103,7 @@ ApplicationWindow {
 
             margin: applicationWindow.margin
             listItemHeight: applicationWindow.listItemHeight
-<<<<<<< HEAD:src/qml/main.qml
-            visible: bothChildren || !snifferSelected
-=======
-            visible: bothChildren || currentMenuId == Main.MenuId.DevicesListId
->>>>>>> 7ed7e62d0977b33750dba42caf34035249dd93f7:src/qml/Main.qml
+            visible: allChildren || currentMenuId === Main.MenuId.DevicesListId
         }
 
         BTScaner {
@@ -122,13 +111,15 @@ ApplicationWindow {
 
             Layout.fillHeight: true
             Layout.fillWidth: true
+
+            visible: allChildren || currentMenuId === Main.MenuId.BLEId
         }
     }
 
     footer: Rectangle {
         height: footerHeight
         color: "black"
-        visible: !bothChildren
+        visible: !allChildren
 
         RowLayout {
             anchors.fill: parent
@@ -137,28 +128,32 @@ ApplicationWindow {
 
             Button {
                 id: devicesListButton
-                text: "Devices"
+                text: qsTr("Devices")
                 onClicked: applicationWindow.menuItemSelected(Main.MenuId.DevicesListId)
+                palette {
+                    button: { devicesList.visible ? "steelblue" : "aliceblue" }
+                }
             }
 
             Item { Layout.fillWidth: true }
 
             Button {
                 id: snifferButton
-                text: "Sniffer"
+                text: qsTr("Sniffer")
                 onClicked: applicationWindow.menuItemSelected(Main.MenuId.SnifferId)
+                palette {
+                    button: { sniffer.visible ? "steelblue" : "aliceblue" }
+                }
             }
 
             Item { Layout.fillWidth: true }
 
-            SelectionButton {
+            Button {
                 id: bleButton
-                Layout.alignment: Qt.AlignCenter
-                buttonText: "BLE"
-                isSniffer: false
-                onClicked: {
-                    //snifferSelected = false;
-                    //recalculateChildren();
+                text: qsTr("BLE")
+                onClicked: applicationWindow.menuItemSelected(Main.MenuId.BLEId)
+                palette {
+                    button: { btScanerForm.visible ? "steelblue" : "aliceblue" }
                 }
             }
 
@@ -168,11 +163,11 @@ ApplicationWindow {
     }
 
     onWidthChanged: {
-        recalculateChildren();
+        recalculateChildren()
     }
 
     onHeightChanged: {
-        recalculateChildren();
+        recalculateChildren()
     }
 
 }
