@@ -53,7 +53,6 @@ Item {
 
         ListView {
             id: sniffer
-            property string backgroundColor: "#202020"
 
             Layout.fillHeight: true
             Layout.fillWidth: true

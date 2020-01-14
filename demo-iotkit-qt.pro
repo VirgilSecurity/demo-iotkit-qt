@@ -49,7 +49,8 @@ include(ext/virgil-iotkit/integration/qt/iotkit.pri)
 #
 
 DEFINES += QT_DEPRECATED_WARNINGS \
-        INFO_CLIENT=1
+        INFO_CLIENT=1  \
+        CFG_CLIENT=1
 
 #
 #   Headers

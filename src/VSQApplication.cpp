@@ -49,7 +49,9 @@ VSQApplication::run() {
     VSQNetifBLEEnumerator bleEnumerator;
     auto netifBLE = QSharedPointer<VSQNetifBLE>::create();
 
-    auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT << VSQFeatures::SNAP_SNIFFER;
+    auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT
+                                  << VSQFeatures::SNAP_SNIFFER
+                                  << VSQFeatures::SNAP_CFG_CLIENT;
     auto impl = VSQImplementations() << netifBLE;
     auto roles = VSQDeviceRoles() << VirgilIoTKit::VS_SNAP_DEV_CONTROL;
     auto appConfig = VSQAppConfig() << VSQManufactureId() << VSQDeviceType() << VSQDeviceSerial()
