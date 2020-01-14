@@ -38,63 +38,80 @@ import QtQuick.Controls 2.12
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.1
 
-ListView {
-    id: sniffer
-    property var listItemHeight
-    property string backgroundColor: "#202020"
+Item {
+    ColumnLayout {
 
-    model: SnapSniffer
+        anchors.fill: parent
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
 
+        spacing: 2
 
-    delegate: Item
-    {
-        id: listDelegate
-        width: parent.width
-        height: bottomMargin.y + bottomMargin.height
-
-        Rectangle {
-            anchors.fill: parent
-            color: backgroundColor
+        Title {
+            text: qsTr("Sniffer")
         }
 
-        Item {
-            id: topMargin
-            anchors.top: parent.top
-            height: applicationWindow.margin * 2
-        }
+        ListView {
+            id: sniffer
+            property string backgroundColor: "#202020"
 
-        Text {
-            id: line1
-            anchors.top: topMargin.top
-            wrapMode: Text.Wrap
-            width: parent.width
-            color: "yellow"
-            text: timestamp + " : " + macSrc + " ==> " + macDst
-        }
+            Layout.fillHeight: true
+            Layout.fillWidth: true
 
-        Text {
-            id: line2
-            anchors.top: line1.bottom
-            wrapMode: Text.Wrap
-            width: parent.width
-            color: "lightBlue"
-            text: serviceId + " : " + elementId
-        }
+            model: SnapSniffer
 
-        Text {
-            id: line3
-            anchors.top: line2.bottom
-            wrapMode: Text.Wrap
-            width: parent.width
-            color: "white"
-            text: contentSize + " bytes : " + content
-        }
 
-        Item {
-            id: bottomMargin
-            anchors.top: line3.bottom
-            height: applicationWindow.margin * 2
-        }
+            delegate: Item
+            {
+                id: listDelegate
+                width: parent.width
+                height: bottomMargin.y + bottomMargin.height
 
+                Rectangle {
+                    anchors.fill: parent
+                    color: backgroundColor
+                }
+
+                Item {
+                    id: topMargin
+                    anchors.top: parent.top
+                    height: applicationWindow.margin * 2
+                }
+
+                Text {
+                    id: line1
+                    anchors.top: topMargin.top
+                    wrapMode: Text.Wrap
+                    width: parent.width
+                    color: "yellow"
+                    text: timestamp + " : " + macSrc + " ==> " + macDst
+                }
+
+                Text {
+                    id: line2
+                    anchors.top: line1.bottom
+                    wrapMode: Text.Wrap
+                    width: parent.width
+                    color: "lightBlue"
+                    text: serviceId + " : " + elementId
+                }
+
+                Text {
+                    id: line3
+                    anchors.top: line2.bottom
+                    wrapMode: Text.Wrap
+                    width: parent.width
+                    color: "white"
+                    text: contentSize + " bytes : " + content
+                }
+
+                Item {
+                    id: bottomMargin
+                    anchors.top: line3.bottom
+                    height: applicationWindow.margin * 2
+                }
+
+            }
+        }
     }
 }

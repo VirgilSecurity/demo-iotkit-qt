@@ -37,10 +37,15 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
 Dialog {
+
+    property string ssid: editSSID.text
+    property string pass: editPass.text
+    property string account: editAccount.text
+
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
     visible: true
-    title: qsTr("Initialization data")
+    title: qsTr("Initialization parameters")
     standardButtons: Dialog.Apply | Dialog.Cancel
 
     contentItem: Rectangle {
@@ -73,6 +78,7 @@ Dialog {
             anchors.topMargin: 10
             color: "black"
         }
+
         TextField {
             id: editPass
             anchors.left: parent.left
@@ -91,6 +97,7 @@ Dialog {
             anchors.topMargin: 10
             color: "black"
         }
+
         TextField {
             id: editAccount
             anchors.left: parent.left

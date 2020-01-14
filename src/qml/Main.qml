@@ -60,7 +60,7 @@ ApplicationWindow {
 
     property int footerHeight: dp(80)
     property int listItemHeight: dp(80)
-    property int minWidthPerElement : 250
+    property int minWidthPerElement : 200
     property int elementCount : 3
     property int margin: dp(5)
     property int dataFontSize: 15
@@ -85,28 +85,26 @@ ApplicationWindow {
     RowLayout {
         anchors.fill: parent
 
-        Sniffer {
-            id: sniffer
-
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-
-            listItemHeight: applicationWindow.listItemHeight * 1.5
-            visible: allChildren || currentMenuId === Main.MenuId.SnifferId
-        }
-
         DevicesList {
             id: devicesList
 
             Layout.fillHeight: true
             Layout.fillWidth: true
 
-            margin: applicationWindow.margin
             listItemHeight: applicationWindow.listItemHeight
             visible: allChildren || currentMenuId === Main.MenuId.DevicesListId
         }
 
-        BTScaner {
+        Sniffer {
+            id: sniffer
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            visible: allChildren || currentMenuId === Main.MenuId.SnifferId
+        }
+
+        BLEManager {
             id: btScanerForm
 
             Layout.fillHeight: true
@@ -158,7 +156,6 @@ ApplicationWindow {
             }
 
             Item { Layout.fillWidth: true }
-
         }
     }
 

@@ -37,107 +37,110 @@ import QtQuick.Layouts 1.5
 import QtQuick.Controls 2.12
 
 Item {
-    property alias mainList: mainList
-
     id: mainItem
 
     Connections {
         target: bleEnum
 
         onFireDevicesListUpdated: {
-            btScanerForm.mainList.model = bleEnum.devicesList()
+            mainList.model = bleEnum.devicesList()
         }
 
         onFireDiscoveryFinished: {
-            btScanerForm.mainList.model = bleEnum.devicesList()
+            mainList.model = bleEnum.devicesList()
             startDiscovery();
         }
     }
 
-    Rectangle {
-        id: mainRect
+    ColumnLayout {
+
         anchors.fill: parent
-        color: "#155902"
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
 
-        Rectangle {
-            id: btnInitialize
-            width: 100
-            height: 35
-            color: "#c9a1e2"
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 8
-            anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 2
 
-            Text {
-                id: txtInitialize
-                text: qsTr("Initialize")
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-                anchors.fill: parent
-                font.pixelSize: 20
+        Title {
+            text: qsTr("Uninitialized devices")
+        }
+
+        ListView {
+            id: mainList
+
+            Layout.alignment: Qt.AlignTop
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            spacing: 2
+
+            delegate: Rectangle {
+                property variant selectedData: model
+
+                id: btDelegate
+                width: parent.width
+                height: column.height
+
+                clip: true
+                Image {
+                    id: bticon
+                    source: "qrc:/qml/default.png";
+                    width: bttext.height - anchors.margins
+                    height: bttext.height - anchors.margins
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.leftMargin: 5
+                    anchors.rightMargin: 5
+                }
+
+                Column {
+                    id: column
+                    anchors.left: bticon.right
+                    anchors.leftMargin: 5
+                    Text {
+                        id: bttext
+                        text: modelData
+                        height: 40
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: Qt.application.font.pixelSize
+                    }
+                }
+
+                color: ListView.view.currentIndex === index ? "white" : "steelblue"
 
                 MouseArea {
-                    id: mouseAreaCInitialize
                     anchors.fill: parent
-
                     onClicked: {
-                        onClicked: showMessageBox()
+                        mainList.currentIndex = index
                     }
                 }
             }
+
+            focus: true
+        }
+
+
+        RowLayout {
+            Layout.alignment: Qt.AlignBottom
+            Layout.preferredHeight: 50
+
+            spacing: 20
+
+            Button {
+                id: btnSetConfig
+                text: qsTr("Set parameters")
+                Layout.fillWidth: true
+                onClicked: setParameters()
+            }
+
+            Button {
+                id: btnInitialize
+                text: qsTr("Initialize")
+                Layout.fillWidth: true
+                onClicked: initializeDevice()
+            }
         }
     }
 
-    ListView {
-        id: mainList
-        anchors.fill: parent
-        anchors.bottomMargin: 53
-        anchors.rightMargin: 8
-        anchors.leftMargin: 8
-        anchors.topMargin: 8
-
-        delegate: Rectangle {
-            property variant selectedData: model
-
-            id: btDelegate
-            width: parent.width
-            height: column.height + 10
-
-            clip: true
-            Image {
-                id: bticon
-                source: "qrc:/qml/default.png";
-                width: bttext.height;
-                height: bttext.height;
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.margins: 5
-            }
-
-            Column {
-                id: column
-                anchors.left: bticon.right
-                anchors.leftMargin: 5
-                Text {
-                    id: bttext
-                    text: modelData
-                    font.family: "FreeSerif"
-                    font.pointSize: 16
-                }
-            }
-
-            color: ListView.view.currentIndex === index ? "steelblue" : "white"
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    mainList.currentIndex = index
-                }
-            }
-        }
-
-        focus: true
-    }
 
     Component.onCompleted: {
         startDiscovery();
@@ -149,18 +152,22 @@ Item {
 
     function startDiscovery() {
         bleEnum.startDiscovery()
-        btScanerForm.mainList.model = bleEnum.devicesList()
+        mainList.model = bleEnum.devicesList()
     }
 
-    function showMessageBox() {
+    function setParameters() {
         var component = Qt.createComponent("InitDialog.qml")
         if (component.status === Component.Ready) {
             var dialog = component.createObject(applicationWindow)
             dialog.applied.connect(function()
-                    {
-                        initializeDevice()
-                        dialog.close()
-                    })
+            {
+                try {
+                    SnapCfgClient.onSetConfigData(dialog.ssid, dialog.pass, dialog.account)
+                } catch (error) {
+                    console.error("Cannot start initialization of device")
+                }
+                dialog.close()
+            })
             dialog.open()
             return dialog
         }
@@ -176,5 +183,6 @@ Item {
             console.error("Cannot start initialization of device")
         }
     }
+
 }
 

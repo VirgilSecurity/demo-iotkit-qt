@@ -32,18 +32,18 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-#ifndef VIRGIL_IOTKIT_QT_DEMO_VSQAPP_H
-#define VIRGIL_IOTKIT_QT_DEMO_VSQAPP_H
+import QtQuick 2.5
+import QtQuick.Layouts 1.5
+import QtQuick.Controls 2.12
 
-#include <QtCore>
-#include <QGuiApplication>
-#include <virgil/iot/qt/VSQIoTKit.h>
+Label {
+    Layout.fillWidth: true
+    color: "white"
+    horizontalAlignment: Text.AlignHCenter
+    font.pixelSize: Qt.application.font.pixelSize * 1.3
+    background: Rectangle {
+        anchors.fill: parent
+        color: "steelblue"
+    }
+}
 
-class VSQApplication : public QObject {
-    Q_OBJECT
-public:
-    int
-    run();
-};
-
-#endif // VSQApplication

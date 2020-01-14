@@ -56,11 +56,11 @@ VSQApplication::run() {
                                     << VirgilIoTKit::VS_LOGLEV_DEBUG << roles << VSQSnapSnifferQmlConfig();
 
     // Connect signals and slots
-    QObject::connect(&bleEnumerator, &VSQNetifBLEEnumerator::fireDeviceSelected,
+    connect(&bleEnumerator, &VSQNetifBLEEnumerator::fireDeviceSelected,
             netifBLE.data(), &VSQNetifBLE::onOpenDevice);
 
-    QObject::connect(netifBLE.data(), SIGNAL(fireDeviceReady()),
-                     &VSQSnapInfoClient::instance(), SLOT(onStartFullPolling()));
+    connect(netifBLE.data(), &VSQNetifBLE::fireDeviceReady,
+            &VSQIoTKitFacade::instance().snapCfgClient(), &VSQSnapCfgClient::onConfigureDevices);
 
     // Initialize IoTKit
     if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
@@ -71,37 +71,17 @@ VSQApplication::run() {
     QQmlContext *context = engine.rootContext();
     context->setContextProperty("bleEnum", &bleEnumerator);
     context->setContextProperty("SnapInfoClient", &VSQSnapInfoClientQml::instance());
+    context->setContextProperty("SnapCfgClient", &VSQIoTKitFacade::instance().snapCfgClient());
     context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer().get());
 
     const QUrl url(QStringLiteral("qrc:/qml/Main.qml"));
     engine.load(url);
 
     // Change size of window for desctop version
-#if defined (__APPLE__) || defined (__linux)
+#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(Q_OS_WATCHOS)
     QObject * rootObject(engine.rootObjects().first());
     rootObject->setProperty("width", 600);
     rootObject->setProperty("height", 400);
-#endif
-
-#if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(Q_OS_WATCHOS)
-    {
-        QObject *rootObject(engine.rootObjects().first());
-
-        int prevWidth = rootObject->property("width").toInt();
-        int prevHeight = rootObject->property("height").toInt();
-        int prevX = rootObject->property("x").toInt();
-        int prevY = rootObject->property("y").toInt();
-
-        constexpr int newWidth = 640;
-        constexpr int newHeight = 400;
-        int newX = prevX - ( newWidth - prevWidth ) / 2;
-        int newY = prevY - ( newHeight - prevHeight ) / 2;
-
-        rootObject->setProperty("width", newWidth);
-        rootObject->setProperty("height", newHeight);
-        rootObject->setProperty("x", newX);
-        rootObject->setProperty("y", newY);
-    }
 #endif
 
     return QGuiApplication::instance()->exec();
