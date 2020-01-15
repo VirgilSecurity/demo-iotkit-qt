@@ -59,7 +59,6 @@ Item {
 
             model: SnapSniffer
 
-
             delegate: Item
             {
                 id: listDelegate
@@ -68,7 +67,7 @@ Item {
 
                 Rectangle {
                     anchors.fill: parent
-                    color: backgroundColor
+                    color: "#303030"
                 }
 
                 Item {

@@ -38,6 +38,7 @@ import QtQuick.Controls 2.12
 
 Label {
     Layout.fillWidth: true
+    z: 5
     color: "white"
     horizontalAlignment: Text.AlignHCenter
     font.pixelSize: Qt.application.font.pixelSize * 1.3
