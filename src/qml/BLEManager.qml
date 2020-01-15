@@ -61,7 +61,7 @@ Item {
         spacing: 2
 
         Title {
-            text: qsTr("Uninitialized devices")
+            text: qsTr("BLE devices")
         }
 
         ListView {

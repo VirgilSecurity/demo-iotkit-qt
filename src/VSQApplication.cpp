@@ -47,12 +47,13 @@ int
 VSQApplication::run() {
     QQmlApplicationEngine engine;
     VSQNetifBLEEnumerator bleEnumerator;
+    auto netifUDPbcast = QSharedPointer<VSQUdpBroadcast>::create();
     auto netifBLE = QSharedPointer<VSQNetifBLE>::create();
 
     auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT
                                   << VSQFeatures::SNAP_SNIFFER
                                   << VSQFeatures::SNAP_CFG_CLIENT;
-    auto impl = VSQImplementations() << netifBLE;
+    auto impl = VSQImplementations() << netifUDPbcast << netifBLE;
     auto roles = VSQDeviceRoles() << VirgilIoTKit::VS_SNAP_DEV_CONTROL;
     auto appConfig = VSQAppConfig() << VSQManufactureId() << VSQDeviceType() << VSQDeviceSerial()
                                     << VirgilIoTKit::VS_LOGLEV_DEBUG << roles << VSQSnapSnifferQmlConfig();
@@ -63,6 +64,9 @@ VSQApplication::run() {
 
     connect(netifBLE.data(), &VSQNetifBLE::fireDeviceReady,
             &VSQIoTKitFacade::instance().snapCfgClient(), &VSQSnapCfgClient::onConfigureDevices);
+
+    connect(&VSQIoTKitFacade::instance().snapCfgClient(), SIGNAL(fireConfigurationDone(bool)),
+            netifBLE.data(), SLOT(onCloseDevice()));
 
     // Initialize IoTKit
     if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
