@@ -32,19 +32,31 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-import QtQuick 2.5
-import QtQuick.Layouts 1.5
-import QtQuick.Controls 2.12
+import QtQuick 2.0
 
-Label {
-    Layout.fillWidth: true
-    z: 5
-    color: "white"
-    horizontalAlignment: Text.AlignHCenter
-    font.pixelSize: Qt.application.font.pixelSize * 1.3
-    background: Rectangle {
+Rectangle {
+    property int side: applicationWindow.footerHeight - 2 * applicationWindow.margin
+    property int textFontSize
+    property string buttonText
+    property bool isSniffer
+    signal clicked()
+
+    width: side * 0.95
+    height: side * 0.95
+    color: "darkblue"
+
+    Text {
+        anchors.centerIn: parent
+        renderType: Text.NativeRendering
+        color: "white"
+        font.pixelSize: applicationWindow.dp(15)
+        text: buttonText
+    }
+
+    MouseArea {
         anchors.fill: parent
-        color: "steelblue"
+        onClicked: {
+            applicationWindow.buttonClicked(isSniffer);
+        }
     }
 }
-

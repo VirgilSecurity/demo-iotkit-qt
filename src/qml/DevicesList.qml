@@ -72,6 +72,9 @@ Item {
                 property var dataLeft: height + 3 * margin
                 property string evenGradientColor: "#20FFFFFF"
 
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+
                 Rectangle {
                     id: rowBackground
                     anchors.fill: parent

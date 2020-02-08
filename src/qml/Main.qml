@@ -52,17 +52,16 @@ ApplicationWindow {
 
     function dp(x) {
         if(dpi < desktopDPI) {
-            return x;
+            return x
         } else {
-            return x * (dpi / dip2pixels);
+            return x * (dpi / dip2pixels)
         }
     }
 
     property int footerHeight: dp(80)
     property int listItemHeight: dp(80)
     property int minWidthPerElement : 200
-    property int elementCount : 2
-    property real widthHeightToShowBoth : 1.5
+    property int elementCount : 3
     property int margin: dp(5)
     property int dataFontSize: 15
     property bool allChildren: true
@@ -74,10 +73,11 @@ ApplicationWindow {
 
     enum MenuId {
         SnifferId,
-        DevicesListId
+        DevicesListId,
+        BLEId
     }
 
-    function menuItemSelected(menuId){
+    function menuItemSelected(menuId) {
         currentMenuId = menuId
         recalculateChildren()
     }
@@ -85,21 +85,33 @@ ApplicationWindow {
     RowLayout {
         anchors.fill: parent
 
-        Sniffer {
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            id: sniffer
-            visible: allChildren || currentMenuId == Main.MenuId.SnifferId
-        }
-
         DevicesList {
+            id: devicesList
+
             Layout.fillHeight: true
             Layout.fillWidth: true
-            id: devicesList
+
             listItemHeight: applicationWindow.listItemHeight
-            visible: allChildren || currentMenuId == Main.MenuId.DevicesListId
+            visible: allChildren || currentMenuId === Main.MenuId.DevicesListId
         }
 
+        Sniffer {
+            id: sniffer
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            visible: allChildren || currentMenuId === Main.MenuId.SnifferId
+        }
+
+        BLEManager {
+            id: btScanerForm
+
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            visible: allChildren || currentMenuId === Main.MenuId.BLEId
+        }
     }
 
     footer: Rectangle {
@@ -116,6 +128,9 @@ ApplicationWindow {
                 id: devicesListButton
                 text: qsTr("Devices")
                 onClicked: applicationWindow.menuItemSelected(Main.MenuId.DevicesListId)
+                palette {
+                    button: { devicesList.visible ? "steelblue" : "aliceblue" }
+                }
             }
 
             Item { Layout.fillWidth: true }
@@ -124,10 +139,23 @@ ApplicationWindow {
                 id: snifferButton
                 text: qsTr("Sniffer")
                 onClicked: applicationWindow.menuItemSelected(Main.MenuId.SnifferId)
+                palette {
+                    button: { sniffer.visible ? "steelblue" : "aliceblue" }
+                }
             }
 
             Item { Layout.fillWidth: true }
 
+            Button {
+                id: bleButton
+                text: qsTr("BLE")
+                onClicked: applicationWindow.menuItemSelected(Main.MenuId.BLEId)
+                palette {
+                    button: { btScanerForm.visible ? "steelblue" : "aliceblue" }
+                }
+            }
+
+            Item { Layout.fillWidth: true }
         }
     }
 

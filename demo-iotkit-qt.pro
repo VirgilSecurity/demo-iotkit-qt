@@ -32,7 +32,7 @@
 #
 #  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-QT += core network qml quick
+QT += core network bluetooth qml quick
 
 CONFIG += c++14
 
@@ -49,7 +49,8 @@ include(ext/virgil-iotkit/integration/qt/iotkit.pri)
 #
 
 DEFINES += QT_DEPRECATED_WARNINGS \
-        INFO_CLIENT=1
+        INFO_CLIENT=1  \
+        CFG_CLIENT=1
 
 CONFIG(iphoneos, iphoneos | iphonesimulator) {
     DEFINES += VS_IOS=1
@@ -95,3 +96,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DEPENDPATH += $${INCLUDEPATH}
 
+ios {
+    QMAKE_INFO_PLIST = packages/ios/Info.plist
+}

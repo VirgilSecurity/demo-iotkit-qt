@@ -36,6 +36,8 @@
 #include <QtQml>
 
 #include <VSQApplication.h>
+#include <virgil/iot/qt/netif/VSQNetifBLE.h>
+#include <virgil/iot/qt/netif/VSQNetifBLEEnumerator.h>
 #include <virgil/iot/logger/logger.h>
 
 VSQApplication::VSQApplication() {
@@ -45,20 +47,37 @@ VSQApplication::VSQApplication() {
 int
 VSQApplication::run() {
     QQmlApplicationEngine engine;
+    VSQNetifBLEEnumerator bleEnumerator;
+    auto netifUDPbcast = QSharedPointer<VSQUdpBroadcast>::create();
 
-    auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT << VSQFeatures::SNAP_SNIFFER;
-    auto impl = VSQImplementations() << m_netifUDPbcast;
+    auto features = VSQFeatures() << VSQFeatures::SNAP_INFO_CLIENT
+                                  << VSQFeatures::SNAP_SNIFFER
+                                  << VSQFeatures::SNAP_CFG_CLIENT;
+    auto impl = VSQImplementations() << m_netifUDPbcast << netifBLE;
     auto roles = VSQDeviceRoles() << VirgilIoTKit::VS_SNAP_DEV_CONTROL;
     auto appConfig = VSQAppConfig() << VSQManufactureId() << VSQDeviceType() << VSQDeviceSerial()
                                     << VirgilIoTKit::VS_LOGLEV_DEBUG << roles << VSQSnapSnifferQmlConfig();
 
+    // Connect signals and slots
+    connect(&bleEnumerator, &VSQNetifBLEEnumerator::fireDeviceSelected,
+            netifBLE.data(), &VSQNetifBLE::onOpenDevice);
+
+    connect(netifBLE.data(), &VSQNetifBLE::fireDeviceReady,
+            &VSQIoTKitFacade::instance().snapCfgClient(), &VSQSnapCfgClient::onConfigureDevices);
+
+    connect(&VSQIoTKitFacade::instance().snapCfgClient(), SIGNAL(fireConfigurationDone(bool)),
+            netifBLE.data(), SLOT(onCloseDevice()));
+
+    // Initialize IoTKit
     if (!VSQIoTKitFacade::instance().init(features, impl, appConfig)) {
         VS_LOG_CRITICAL("Unable to initialize Virgil IoT KIT");
         return -1;
     }
 
     QQmlContext *context = engine.rootContext();
+    context->setContextProperty("bleEnum", &bleEnumerator);
     context->setContextProperty("SnapInfoClient", &VSQSnapInfoClientQml::instance());
+    context->setContextProperty("SnapCfgClient", &VSQIoTKitFacade::instance().snapCfgClient());
     context->setContextProperty("SnapSniffer", VSQIoTKitFacade::instance().snapSniffer().get());
 
 #if VS_IOS
@@ -68,6 +87,7 @@ VSQApplication::run() {
     const QUrl url(QStringLiteral("qrc:/qml/Main.qml"));
     engine.load(url);
 
+    // Change size of window for desctop version
 #if !defined(Q_OS_ANDROID) && !defined(Q_OS_IOS) && !defined(Q_OS_WATCHOS)
     {
         QObject *rootObject(engine.rootObjects().first());
